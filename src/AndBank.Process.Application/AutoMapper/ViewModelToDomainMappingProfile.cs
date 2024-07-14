@@ -9,7 +9,6 @@ namespace AndBank.Process.Application.AutoMapper
         public ViewModelToDomainMappingProfile()
         {
             CreateMap<PositionViewModel, PositionModel>();
-            CreateMap<List<PositionViewModel>, List<PositionViewModel>>();
         }
     }
 }

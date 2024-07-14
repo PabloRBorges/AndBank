@@ -10,13 +10,19 @@ namespace AndBank.Api.Configuration
     {
         public static void RegisterServices(this IServiceCollection services)
         {
+            //mapper
+            services.AddAutoMapper(cfg =>
+            {
+                cfg.AddProfile<DomainToViewModelMappingProfile>();
+                cfg.AddProfile<ViewModelToDomainMappingProfile>();
+            });
+
             //repository
             services.AddScoped<IPositionRepository,PositionRepository>();
 
             //services
             services.AddScoped<IPositionService, PositionService>();
 
-            
         }
     }
 }

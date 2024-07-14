@@ -14,7 +14,6 @@ namespace AndBank.Process.Application.AutoMapper
         public DomainToViewModelMappingProfile()
         {
             CreateMap<PositionModel, PositionViewModel>();
-           
         }
     }
 }

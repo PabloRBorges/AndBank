@@ -10,8 +10,6 @@ builder
     .AddSwaggerConfig()
     .AddDbContextConfig();
 
-//builder.Services.AddAutoMapper(typeof(DomainToViewModelMappingProfile), typeof(ViewModelToDomainMappingProfile));
-
 builder.Services.RegisterServices();
 
 

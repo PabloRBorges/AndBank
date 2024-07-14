@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using System.Diagnostics;
 
 
-
+const string connectionString = "Host=localhost;Database=positionsdb;Username=postgres;Password=1q2w3e4r@";
 
 while (true)
 {
@@ -103,7 +103,7 @@ async Task ProcessBatch(List<PositionModel> batch)
 {
     var serviceProvider = new ServiceCollection()
           .AddDbContext<PositionDbContext>(options =>
-              options.UseNpgsql("Host=localhost;Database=positionsdb;Username=postgres;Password=1q2w3e4r@"))
+              options.UseNpgsql())
           .BuildServiceProvider();
 
     using (var context = serviceProvider.GetRequiredService<PositionDbContext>())

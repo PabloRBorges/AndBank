@@ -69,7 +69,7 @@ namespace ApiFuncional.Controllers
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
 
-            var result = await _positionService.TopClients( 10);
+            var result = await _positionService.TopClients(10);
 
             if (result == null)
                 return NotFound(ModelState);

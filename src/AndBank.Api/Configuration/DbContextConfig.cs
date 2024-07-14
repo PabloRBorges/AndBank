@@ -7,7 +7,8 @@ namespace AndBank.Api.Configuration
     {
         public static WebApplicationBuilder AddDbContextConfig(this WebApplicationBuilder builder)
         {
-            builder.Services.AddDbContext<PositionDbContext>();
+            builder.Services.AddDbContext<PositionDbContext>(options =>
+                    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             return builder;
         }

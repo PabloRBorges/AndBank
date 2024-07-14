@@ -2,11 +2,6 @@
 using AndBank.Process.Application.ViewModel;
 using AndBank.Processs.Aplication;
 using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AndBank.Business.Services
 {
@@ -15,31 +10,22 @@ namespace AndBank.Business.Services
         private readonly IPositionRepository _repository;
         private readonly IMapper _mapper;
 
-        public PositionService(IPositionRepository positionRepository)
+        public PositionService(IPositionRepository positionRepository, IMapper mapper)
         {
             _repository = positionRepository;
+            _mapper = mapper;
         }
 
+        /// <summary>
+        /// Busca as posicões por Cliente
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<PositionViewModel>> GetPositionsClientById(string id)
         {
             var client = await _repository.GetClientAsync(id);
 
-            //var result =  _mapper.Map<IEnumerable<PositionViewModel>>(client);
-            var listresult = new List<PositionViewModel>();
-
-            foreach (var position in client)
-            {
-                var result = new PositionViewModel()
-                {
-                    Value = position.Value,
-                    ClientId = position.ClientId,
-                    Date = position.Date,
-                    PositionId = position.PositionId,
-                    ProductId = position.ProductId,
-                    Quantity = position.Quantity,
-                };
-                listresult.Add(result);
-            }
+            var listresult = _mapper.Map<IEnumerable<PositionViewModel>>(client);
 
             //agrupa por position e retorna pela data ordenada
             listresult.GroupBy(p => p.PositionId)
@@ -49,27 +35,16 @@ namespace AndBank.Business.Services
             return listresult;
         }
 
+        /// <summary>
+        /// Faz um resumo dos valores por cliente
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<SummaryViewModel>> GetClientSummary(string id)
         {
             var clients = await _repository.GetClientAsync(id);
 
-            // var result = _mapper.Map<List<PositionViewModel>>(clients);
-            var listresult = new List<PositionViewModel>();
-
-            foreach (var position in clients)
-            {
-                var result = new PositionViewModel()
-                {
-                    Value = position.Value,
-                    ClientId = position.ClientId,
-                    Date = position.Date,
-                    PositionId = position.PositionId,
-                    ProductId = position.ProductId,
-                    Quantity = position.Quantity,
-                };
-                listresult.Add(result);
-            }
-
+            var listresult = _mapper.Map<List<PositionViewModel>>(clients);
             var summaryList = listresult
             .GroupBy(p => p.ProductId)
             .Select(g => new SummaryViewModel
@@ -83,43 +58,30 @@ namespace AndBank.Business.Services
             return summaryList;
         }
 
+        /// <summary>
+        /// Processa as informações e grava no banco
+        /// </summary>
+        /// <param name="positionModel"></param>
+        /// <returns></returns>
         public async Task PositionProcess(List<PositionModel> positionModel)
         {
             if (positionModel.Count == 0) return;
 
-            try
-            {
-                await _repository.InsertAsync(positionModel);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Erro na tentativa de gravar os dados no banco Pgsql {ex.ToString()}");
-            }
-
+            await _repository.InsertAsync(positionModel);
         }
 
+        /// <summary>
+        /// Busca os clientes com as maiores posições
+        /// </summary>
+        /// <param name="topNumber"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<PositionViewModel>> TopClients(int topNumber)
         {
             var client = await _repository.GetTopClientsAsync(topNumber);
 
-            //var result =  _mapper.Map<IEnumerable<PositionViewModel>>(client);
-            var listresult = new List<PositionViewModel>();
+            var listresult = _mapper.Map<IEnumerable<PositionViewModel>>(client);
 
-            foreach (var position in client)
-            {
-                var result = new PositionViewModel()
-                {
-                    Value = position.Value,
-                    ClientId = position.ClientId,
-                    Date = position.Date,
-                    PositionId = position.PositionId,
-                    ProductId = position.ProductId,
-                    Quantity = position.Quantity,
-                };
-                listresult.Add(result);
-            }
-
-            //agrupa por position e retorna pela data ordenada
+            //agrupa por valor e pega os 10 primeiros
             var top10Positions = listresult
                 .OrderByDescending(p => p.Value)
                 .Take(topNumber)

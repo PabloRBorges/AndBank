@@ -1,6 +1,7 @@
 ﻿using AndBank.Core.Data;
 using AndBank.Processs.Aplication;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace AndBank.Data.Context
 {
@@ -8,6 +9,7 @@ namespace AndBank.Data.Context
     {
         public PositionDbContext(DbContextOptions<PositionDbContext> options) : base(options)
         {
+             
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         }
 
@@ -17,10 +19,10 @@ namespace AndBank.Data.Context
 
         public DbSet<PositionModel> Positions { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseNpgsql("Host=localhost;Database=positionsdb;Username=postgres;Password=1q2w3e4r@");
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseNpgsql("Host=localhost;Database=positionsdb;Username=postgres;Password=1q2w3e4r@");
+        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
