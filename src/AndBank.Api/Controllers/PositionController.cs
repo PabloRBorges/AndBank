@@ -18,54 +18,45 @@ namespace ApiFuncional.Controllers
             _positionService = positionService;
         }
 
-
-        // GET /api/positions/client/{clientId}:
-        // Retorna as últimas posições (agrupe pelo positionId e selecione a última ordenando por data) para um determinado clientId.
         //■ GET /api/positions/client/{ clientId}/summary: Retorna as últimas posições(agrupe pelo positionId e selecione a
         //última ordenando por data) e some os valores para cada productId.
         //■ GET /api/positions/top10: Retorna as 10 últimas posições com os maiores valores.
 
         [HttpGet]
-        [Route("cliente")]
+        [Route("clienteId")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<PositionViewModel>> Get(string clienteId)
+        public async Task<ActionResult<List<PositionViewModel>>> Get(string clienteId)
         {
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
             
-            var result = await _positionService.GetClientById(clienteId);
+            var result = await _positionService.GetPositionsClientById(clienteId);
 
             if (result == null)
                 return NotFound(ModelState);
             
-            return result;
+            return Ok(result);
         }
 
-        //[AllowAnonymous]
-        ////[EnableCors("Production")]
-        //[HttpGet("{id:int}")]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[ProducesDefaultResponseType]
-        //public async Task<ActionResult<PositionViewModel>> GetProduto(int id)
-        //{
-        //    if (_positionRepository.Produtos == null)
-        //    {
-        //        return NotFound();
-        //    }
+        [HttpGet("{clientId}/summary")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<SummaryViewModel>> GetProduto(string clienteId)
+        {
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
 
-        //    var produto = await _positionRepository.Produtos.FindAsync(id);
+            var result = await _positionService.GetClientSummary(clienteId);
 
-        //    if (produto == null)
-        //    {
-        //        return NotFound();
-        //    }
+            if (result == null)
+                return NotFound(ModelState);
 
-        //    return produto;
-        //}
+            return Ok(result);
+        }
 
         //[HttpPost]
         //[ProducesResponseType(StatusCodes.Status201Created)]

@@ -1,6 +1,6 @@
-﻿using AndBank.Business.Models;
-using AndBank.Data.Context;
+﻿using AndBank.Data.Context;
 using AndBank.Data.Repository;
+using AndBank.Processs.Aplication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -86,7 +86,7 @@ async Task ImportDataFromApi()
                     }
                 }
             }
-           
+
             totalTime.Stop();
             long elapsedMilliseconds = totalTime.ElapsedMilliseconds;
             double elapsedSeconds = elapsedMilliseconds / 1000.0;
@@ -110,7 +110,7 @@ async Task ProcessBatch(List<PositionModel> batch)
     {
         PositionRepository positionRepository = new PositionRepository(context);
         await positionRepository.InsertAsync(batch);
-       // await positionRepository.UnitOfWork.Commit();
+        // await positionRepository.UnitOfWork.Commit();
     }
 }
 

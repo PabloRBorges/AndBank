@@ -1,8 +1,6 @@
-﻿using AndBank.Business.Models;
-using AndBank.Core.Data;
-using AndBank.Core.DomainObjects;
+﻿using AndBank.Core.Data;
+using AndBank.Processs.Aplication;
 using Microsoft.EntityFrameworkCore;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Query.Expressions.Internal;
 
 namespace AndBank.Data.Context
 {

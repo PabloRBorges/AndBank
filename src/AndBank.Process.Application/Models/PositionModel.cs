@@ -1,8 +1,7 @@
 ﻿using AndBank.Core.DomainObjects;
 using AndBank.Core.Models;
-using System.ComponentModel.DataAnnotations;
 
-namespace AndBank.Business.Models
+namespace AndBank.Processs.Aplication
 {
     public class PositionModel : Entity, IAggregateRoot
     {

@@ -1,4 +1,5 @@
 ﻿using AndBank.Process.Application.ViewModel;
+using AndBank.Processs.Aplication;
 using AutoMapper;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,8 @@ namespace AndBank.Process.Application.AutoMapper
     {
         public DomainToViewModelMappingProfile()
         {
-                CreateMap<PositionViewModel, PositionViewModel>();
-                CreateMap<List<PositionViewModel>, List<PositionViewModel>>();  
+            CreateMap<PositionModel, PositionViewModel>();
+           
         }
     }
 }

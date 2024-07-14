@@ -1,7 +1,7 @@
 ﻿using AndBank.Business.Interfaces;
-using AndBank.Business.Models;
 using AndBank.Core.Data;
 using AndBank.Data.Context;
+using AndBank.Processs.Aplication;
 using Microsoft.EntityFrameworkCore;
 
 namespace AndBank.Data.Repository
@@ -18,9 +18,9 @@ namespace AndBank.Data.Repository
 
         public IUnitOfWork UnitOfWork => _dbContext;
 
-        public async Task<PositionModel> GetClientAsync(string clientId)
+        public async Task<IEnumerable<PositionModel>> GetClientAsync(string clienteId)
         {
-            return await _dbContext.Positions.FirstOrDefaultAsync(x => x.ClientId == clientId);
+           return await _dbContext.Positions.Where(x => x.ClientId == clienteId).ToListAsync(); 
         }
 
         public async Task InsertAsync(IEnumerable<PositionModel> positionModels)

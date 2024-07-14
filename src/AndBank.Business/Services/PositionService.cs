@@ -1,6 +1,6 @@
 ﻿using AndBank.Business.Interfaces;
-using AndBank.Business.Models;
 using AndBank.Process.Application.ViewModel;
+using AndBank.Processs.Aplication;
 using AutoMapper;
 using System;
 using System.Collections.Generic;
@@ -20,22 +20,67 @@ namespace AndBank.Business.Services
             _repository = positionRepository;
         }
 
-        public Task<PositionViewModel> GetClientById(string id)
+        public async Task<IEnumerable<PositionViewModel>> GetPositionsClientById(string id)
         {
-            var client = _repository.GetClientAsync(id);
+            var client = await _repository.GetClientAsync(id);
 
-            var result =  _mapper.Map<PositionViewModel>(client);
+            //var result =  _mapper.Map<IEnumerable<PositionViewModel>>(client);
+            var listresult = new List<PositionViewModel>();
 
-            return Task.FromResult(result);
+            foreach (var position in client)
+            {
+                var result = new PositionViewModel()
+                {
+                    Value = position.Value,
+                    ClientId = position.ClientId,
+                    Date = position.Date,
+                    PositionId = position.PositionId,
+                    ProductId = position.ProductId,
+                    Quantity = position.Quantity,
+                };
+                listresult.Add(result);
+            }
+
+            //agrupa por position e retorna pela data ordenada
+            listresult.GroupBy(p => p.PositionId)
+            .Select(g => g.OrderByDescending(p => p.Date).First())
+            .ToList();
+
+            return listresult;
         }
 
-        public async Task<IEnumerable<PositionViewModel>> GetClientSymary(string id)
+        public async Task<IEnumerable<SummaryViewModel>> GetClientSummary(string id)
         {
-            var clients = _repository.GetClientAsync(id);
+            var clients =await _repository.GetClientAsync(id);
 
-            var result = _mapper.Map<List<PositionViewModel>>(clients);
+           // var result = _mapper.Map<List<PositionViewModel>>(clients);
+            var listresult = new List<PositionViewModel>();
 
-            return await Task.FromResult(result);
+            foreach (var position in clients)
+            {
+                var result = new PositionViewModel()
+                {
+                    Value = position.Value,
+                    ClientId = position.ClientId,
+                    Date = position.Date,
+                    PositionId = position.PositionId,
+                    ProductId = position.ProductId,
+                    Quantity = position.Quantity,
+                };
+                listresult.Add(result);
+            }
+
+           var summaryList = listresult
+           .GroupBy(p => p.ProductId)
+           .Select(g => new SummaryViewModel
+           {
+               ProductId = g.Key,
+               TotalValue = g.Sum(p => p.Value)
+           })
+           .ToList();
+
+
+            return summaryList;
         }
 
         public async Task PositionProcess(List<PositionModel> positionModel)
