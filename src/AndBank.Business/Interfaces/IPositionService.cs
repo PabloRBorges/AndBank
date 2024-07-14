@@ -8,6 +8,6 @@ namespace AndBank.Business.Interfaces
         Task PositionProcess(List<PositionModel> positionModel);
         Task<IEnumerable<PositionViewModel>> GetPositionsClientById(string id);
         Task<IEnumerable<SummaryViewModel>> GetClientSummary(string id);
-        Task<IEnumerable<PositionViewModel>> TopClient(string id);
+        Task<IEnumerable<PositionViewModel>> TopClients( int topNumber);
     }
 }

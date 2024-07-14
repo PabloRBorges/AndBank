@@ -70,5 +70,10 @@ namespace AndBank.Data.Repository
         {
             _dbContext?.Dispose();
         }
+
+        public async Task<IEnumerable<PositionModel>> GetTopClientsAsync(int topNumber)
+        {
+            return await _dbContext.Positions.OrderByDescending(p => p.Value).Take(topNumber).ToListAsync();
+        }
     }
 }

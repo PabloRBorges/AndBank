@@ -51,9 +51,9 @@ namespace AndBank.Business.Services
 
         public async Task<IEnumerable<SummaryViewModel>> GetClientSummary(string id)
         {
-            var clients =await _repository.GetClientAsync(id);
+            var clients = await _repository.GetClientAsync(id);
 
-           // var result = _mapper.Map<List<PositionViewModel>>(clients);
+            // var result = _mapper.Map<List<PositionViewModel>>(clients);
             var listresult = new List<PositionViewModel>();
 
             foreach (var position in clients)
@@ -70,14 +70,14 @@ namespace AndBank.Business.Services
                 listresult.Add(result);
             }
 
-           var summaryList = listresult
-           .GroupBy(p => p.ProductId)
-           .Select(g => new SummaryViewModel
-           {
-               ProductId = g.Key,
-               TotalValue = g.Sum(p => p.Value)
-           })
-           .ToList();
+            var summaryList = listresult
+            .GroupBy(p => p.ProductId)
+            .Select(g => new SummaryViewModel
+            {
+                ProductId = g.Key,
+                TotalValue = g.Sum(p => p.Value)
+            })
+            .ToList();
 
 
             return summaryList;
@@ -95,12 +95,37 @@ namespace AndBank.Business.Services
             {
                 Console.WriteLine($"Erro na tentativa de gravar os dados no banco Pgsql {ex.ToString()}");
             }
-           
+
         }
 
-        public Task<IEnumerable<PositionViewModel>> TopClient(string id)
+        public async Task<IEnumerable<PositionViewModel>> TopClients(int topNumber)
         {
-            throw new NotImplementedException();
+            var client = await _repository.GetTopClientsAsync(topNumber);
+
+            //var result =  _mapper.Map<IEnumerable<PositionViewModel>>(client);
+            var listresult = new List<PositionViewModel>();
+
+            foreach (var position in client)
+            {
+                var result = new PositionViewModel()
+                {
+                    Value = position.Value,
+                    ClientId = position.ClientId,
+                    Date = position.Date,
+                    PositionId = position.PositionId,
+                    ProductId = position.ProductId,
+                    Quantity = position.Quantity,
+                };
+                listresult.Add(result);
+            }
+
+            //agrupa por position e retorna pela data ordenada
+            var top10Positions = listresult
+                .OrderByDescending(p => p.Value)
+                .Take(topNumber)
+                .ToList();
+
+            return listresult;
         }
     }
 }

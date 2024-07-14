@@ -9,6 +9,7 @@ namespace AndBank.Business.Interfaces
         Task<IEnumerable<PositionModel>> GetListClientAsync(string clientId);
         Task<IEnumerable<PositionModel>> GetSummaryAsync(string clientId);
         Task<IEnumerable<PositionModel>> GetAllAsync();
+        Task<IEnumerable<PositionModel>> GetTopClientsAsync(int topNumber);
         Task InsertAsync(IEnumerable<PositionModel> positionModel);
         Task InsertAsync(PositionModel positionModel);
     }
