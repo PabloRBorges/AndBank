@@ -3,6 +3,7 @@ using AndBank.Data.Repository;
 using AndBank.Processs.Aplication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Diagnostics;
 
@@ -103,14 +104,19 @@ async Task ProcessBatch(List<PositionModel> batch)
 {
     var serviceProvider = new ServiceCollection()
           .AddDbContext<PositionDbContext>(options =>
-              options.UseNpgsql())
+              //options.UseNpgsql("Host=localhost;Database=postgres;Username=postgres;Password=1q2w3e4r@"))
+              options.UseNpgsql("Host=postgres;Database=postgres;Username=postgres;Password=1q2w3e4r@"))
           .BuildServiceProvider();
+
+
 
     using (var context = serviceProvider.GetRequiredService<PositionDbContext>())
     {
+        //varifica a estrutura do banco
+        context.Database.EnsureCreated();
+
         PositionRepository positionRepository = new PositionRepository(context);
         await positionRepository.InsertAsync(batch);
-        // await positionRepository.UnitOfWork.Commit();
     }
 }
 

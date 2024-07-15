@@ -22,23 +22,22 @@ namespace AndBank.Process.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("AndBank.Business.Models.PositionModel", b =>
+            modelBuilder.Entity("AndBank.Processs.Aplication.PositionModel", b =>
                 {
-                    b.Property<string>("PositionId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ClientId")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("ClientId")
-                        .IsRequired()
+                    b.Property<string>("PositionId")
                         .HasColumnType("text");
 
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("ProductId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<decimal>("Quantity")
@@ -47,7 +46,7 @@ namespace AndBank.Process.Data.Migrations
                     b.Property<decimal>("Value")
                         .HasColumnType("numeric");
 
-                    b.HasKey("PositionId", "Date");
+                    b.HasKey("Id");
 
                     b.ToTable("Positions");
                 });

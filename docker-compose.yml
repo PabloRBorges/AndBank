@@ -1,0 +1,54 @@
+version: '3.4'
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1q2w3e4r@
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - position-network
+    container_name: postgres
+
+  andbank.console:
+    image: ${DOCKER_REGISTRY-}andbankconsole
+    build:
+      context: .
+      dockerfile: src/AndBank.Console/Dockerfile
+    networks:
+      - position-network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - postgres
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+        echo "Running migrations..."
+        dotnet ef database update
+
+  andbank.api:
+    image: ${DOCKER_REGISTRY-}andbankapi
+    build:
+      context: .
+      dockerfile: src/AndBank.Api/Dockerfile
+    ports:
+      - 8080:8080
+      - 8081:8081
+    networks:
+      - position-network
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+
+networks: 
+    position-network:
+      driver: bridge

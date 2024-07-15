@@ -15,17 +15,17 @@ namespace AndBank.Process.Data.Migrations
                 name: "Positions",
                 columns: table => new
                 {
-                    PositionId = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PositionId = table.Column<string>(type: "text", nullable: true),
+                    ProductId = table.Column<string>(type: "text", nullable: true),
+                    ClientId = table.Column<string>(type: "text", nullable: true),
                     Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    ProductId = table.Column<string>(type: "text", nullable: false),
-                    ClientId = table.Column<string>(type: "text", nullable: false),
                     Value = table.Column<decimal>(type: "numeric", nullable: false),
-                    Quantity = table.Column<decimal>(type: "numeric", nullable: false),
-                    Id = table.Column<Guid>(type: "uuid", nullable: false)
+                    Quantity = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Positions", x => new { x.Id, x.Date });
+                    table.PrimaryKey("PK_Positions", x => x.Id);
                 });
         }
 

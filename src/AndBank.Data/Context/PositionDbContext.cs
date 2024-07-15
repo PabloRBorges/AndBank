@@ -1,4 +1,5 @@
 ﻿using AndBank.Core.Data;
+using AndBank.Process.Data.Mappings;
 using AndBank.Processs.Aplication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -26,7 +27,9 @@ namespace AndBank.Data.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<PositionModel>().HasKey(p => new { p.PositionId, p.Date });
+            modelBuilder.ApplyConfiguration(new PositionMapping());
+
+            base.OnModelCreating(modelBuilder);
         }
 
         public async Task<bool> Commit()

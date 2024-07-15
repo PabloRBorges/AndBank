@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AndBank.Console": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
