@@ -25,6 +25,11 @@ namespace AndBank.Business.Services
         {
             var client = await _repository.GetClientAsync(id);
 
+            if(client == null)
+            {
+                return Enumerable.Empty<PositionViewModel>();
+            }
+
             var listresult = _mapper.Map<IEnumerable<PositionViewModel>>(client);
 
             //agrupa por position e retorna pela data ordenada
@@ -44,6 +49,9 @@ namespace AndBank.Business.Services
         {
             var clients = await _repository.GetClientAsync(id);
 
+            if(clients == null)
+                return Enumerable.Empty<SummaryViewModel>();
+            
             var listresult = _mapper.Map<List<PositionViewModel>>(clients);
             var summaryList = listresult
             .GroupBy(p => p.ProductId)

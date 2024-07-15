@@ -1,9 +1,6 @@
 ﻿using AndBank.Business.Interfaces;
 using AndBank.Process.Application.ViewModel;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ApiFuncional.Controllers
 {
@@ -18,10 +15,6 @@ namespace ApiFuncional.Controllers
             _positionService = positionService;
         }
 
-        //■ GET /api/positions/client/{ clientId}/summary: Retorna as últimas posições(agrupe pelo positionId e selecione a
-        //última ordenando por data) e some os valores para cada productId.
-        //■ GET /api/positions/top10: Retorna as 10 últimas posições com os maiores valores.
-
         [HttpGet]
         [Route("clienteId")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -32,12 +25,12 @@ namespace ApiFuncional.Controllers
         {
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
-            
+
             var result = await _positionService.GetPositionsClientById(clienteId);
 
             if (result == null)
                 return NotFound(ModelState);
-            
+
             return Ok(result);
         }
 
@@ -53,7 +46,7 @@ namespace ApiFuncional.Controllers
 
             var result = await _positionService.GetClientSummary(clienteId);
 
-            if (result == null)
+            if (!result.Any())
                 return NotFound(ModelState);
 
             return Ok(result);

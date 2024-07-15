@@ -5,10 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using System.Diagnostics;
+using Polly;
+using System.Text;
 
 string environment;
 
+#region Parametros
 #if DEBUG
 environment = "Development";
 #else
@@ -25,73 +27,78 @@ IConfiguration configuration = builder.Build();
 var connectionString = configuration.GetConnectionString("DefaultConnection");
 var apiUrl = configuration["EndPoinAndBank:UrlApi"];
 var passw = configuration["EndPoinAndBank:Password"];
+#endregion
 
 Console.WriteLine($"Iniciando a importação da API{apiUrl}");
-await ImportDataFromApi();
 
-async Task ImportDataFromApi()
+#region Polly
+var retryPolicy = Policy
+           .Handle<HttpRequestException>()
+           .Or<TaskCanceledException>()
+           .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                              (exception, timeSpan, retryCount, context) =>
+                              {
+                                  Console.WriteLine($"Tentativa {retryCount} falhou: {exception.Message}. Tentando novamente em {timeSpan}.");
+                              });
+
+#endregion
+
+#region Chamada da Api Externa
+using (HttpClient client = new HttpClient())
 {
-    Console.Clear();
-    Console.WriteLine("Importando informações da API...");
-    string url = apiUrl ?? "";
+    client.DefaultRequestHeaders.Add("X-test-Key", passw);
 
-    using (HttpClient client = new HttpClient())
+    await retryPolicy.ExecuteAsync(async () =>
     {
-        client.DefaultRequestHeaders.Add("x-Test-Key", passw);
-
-        using (HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
+        using (HttpResponseMessage response = await client.GetAsync(apiUrl, HttpCompletionOption.ResponseHeadersRead))
         {
-            var totalTime = new Stopwatch();
-            totalTime.Start();
-
             response.EnsureSuccessStatusCode();
-
-            long? totalBytes = response.Content.Headers.ContentLength;
 
             using (Stream stream = await response.Content.ReadAsStreamAsync())
             {
-                using (StreamReader reader = new StreamReader(stream))
+                await ProcessStreamAsync(stream);
+            }
+        }
+    });
+}
+#endregion
+
+async Task ProcessStreamAsync(Stream stream)
+{
+    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+    {
+        using (JsonTextReader jsonReader = new JsonTextReader(reader))
+        {
+            JsonSerializer serializer = new JsonSerializer();
+            List<PositionModel> batch = new List<PositionModel>();
+
+            var lote = 1;
+            while (await jsonReader.ReadAsync())
+            {
+                if (jsonReader.TokenType == JsonToken.StartObject)
                 {
-                    using (JsonTextReader jsonReader = new JsonTextReader(reader))
+                    PositionModel data = serializer.Deserialize<PositionModel>(jsonReader);
+                    batch.Add(data);
+                    if (batch.Count >= 50000)
                     {
-                        JsonSerializer serializer = new JsonSerializer();
-                        List<PositionModel> batch = new List<PositionModel>();
-
-                        var lote = 1;
-                        while (await jsonReader.ReadAsync())
-                        {
-                            if (jsonReader.TokenType == JsonToken.StartObject)
-                            {
-                                PositionModel data = serializer.Deserialize<PositionModel>(jsonReader);
-                                batch.Add(data);
-                                if (batch.Count >= 50000)
-                                {
-                                    Console.WriteLine($"\nLote: {lote}   ");
-                                    await ProcessBatch(batch);
-                                    batch.Clear();
-                                    lote++;
-                                }
-                            }
-                        }
-
-                        if (batch.Count > 0) // caso sobre dados no lote de importação
-                        {
-                            await ProcessBatch(batch);
-                        }
-                        Console.WriteLine("\nDownload completo.");
+                        Console.WriteLine($"\nLote: {lote}   ");
+                        await ProcessBatch(batch);
+                        batch.Clear();
+                        lote++;
                     }
                 }
             }
 
-            totalTime.Stop();
-            long elapsedMilliseconds = totalTime.ElapsedMilliseconds;
-            double elapsedSeconds = elapsedMilliseconds / 1000.0;
-            Console.WriteLine("\nImportação concluída. Tempo total: {0:F2} segundos", elapsedSeconds);
-            Console.WriteLine("\nPressione qualquer tecla para voltar ao menu.");
-            Console.ReadLine();
+            if (batch.Count > 0) // caso sobre dados no lote de importação
+            {
+                await ProcessBatch(batch);
+            }
+            Console.WriteLine("\nDownload completo.");
         }
     }
+    Console.WriteLine("\nDownload completo.");
 }
+
 
 async Task ProcessBatch(List<PositionModel> batch)
 {
