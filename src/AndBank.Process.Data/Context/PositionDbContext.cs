@@ -20,11 +20,6 @@ namespace AndBank.Data.Context
 
         public DbSet<PositionModel> Positions { get; set; }
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    optionsBuilder.UseNpgsql("Host=localhost;Database=positionsdb;Username=postgres;Password=1q2w3e4r@");
-        //}
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new PositionMapping());
@@ -34,8 +29,6 @@ namespace AndBank.Data.Context
 
         public async Task<bool> Commit()
         {
-            //TODO: incluir validação extras
-
             var sucesso = await base.SaveChangesAsync() > 0;
 
             return sucesso;

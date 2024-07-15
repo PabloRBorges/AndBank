@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AndBank.Data\AndBank.Process.Data.csproj" />
+    <ProjectReference Include="..\AndBank.Process.Data\AndBank.Process.Data.csproj" />
     <ProjectReference Include="..\AndBank.Process.Application\AndBank.Process.Application.csproj" />
   </ItemGroup>
 

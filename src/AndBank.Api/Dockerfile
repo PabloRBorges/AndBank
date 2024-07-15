@@ -8,7 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/AndBank.Api/AndBank.Api.csproj", "src/AndBank.Api/"]
-COPY ["src/AndBank.Data/AndBank.Process.Data.csproj", "src/AndBank.Data/"]
+COPY ["src/AndBank.Process.Data/AndBank.Process.Data.csproj", "src/AndBank.Process.Data/"]
 COPY ["src/AndBank.Business/AndBank.Process.Business.csproj", "src/AndBank.Business/"]
 COPY ["src/AndBank.Core/AndBank.Core.csproj", "src/AndBank.Core/"]
 COPY ["src/AndBank.Process.Application/AndBank.Process.Application.csproj", "src/AndBank.Process.Application/"]

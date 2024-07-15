@@ -26,12 +26,6 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
       - postgres
-    entrypoint:
-      - /bin/bash
-      - -c
-      - |
-        echo "Running migrations..."
-        dotnet ef database update
 
   andbank.api:
     image: ${DOCKER_REGISTRY-}andbankapi

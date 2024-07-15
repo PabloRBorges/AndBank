@@ -2,43 +2,38 @@
 using AndBank.Data.Repository;
 using AndBank.Processs.Aplication;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Diagnostics;
 
+string environment;
 
-const string connectionString = "Host=localhost;Database=positionsdb;Username=postgres;Password=1q2w3e4r@";
+#if DEBUG
+environment = "Development";
+#else
+        environment = "Production";
+#endif
 
-while (true)
-{
-    Console.Clear();
-    Console.WriteLine("Menu:");
-    Console.WriteLine("1. Importar informações da API AndBank");
-    Console.WriteLine("2. Sair");
-    Console.Write("Escolha uma opção: ");
-    var choice = Console.ReadLine();
+var builder = new ConfigurationBuilder()
+    .SetBasePath(AppContext.BaseDirectory)
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
 
-    switch (choice)
-    {
-        case "1":
-            await ImportDataFromApi();
-            break;
-        case "2":
-            return;
-        default:
-            Console.WriteLine("Opção inválida. Tente novamente.");
-            break;
-    }
-}
+IConfiguration configuration = builder.Build();
+var connectionString = configuration.GetConnectionString("DefaultConnection");
+var apiUrl = configuration["EndPoinAndBank:UrlApi"];
+var passw = configuration["EndPoinAndBank:Password"];
+
+Console.WriteLine($"Iniciando a importação da API{apiUrl}");
+await ImportDataFromApi();
 
 async Task ImportDataFromApi()
 {
     Console.Clear();
     Console.WriteLine("Importando informações da API...");
-    var passw = "a2mpznLX6F8rD";
-
-    string url = "https://api.andbank.com.br/candidate/positions"; // Substitua pela URL da sua API
+    string url = apiUrl ?? "";
 
     using (HttpClient client = new HttpClient())
     {
@@ -93,22 +88,17 @@ async Task ImportDataFromApi()
             double elapsedSeconds = elapsedMilliseconds / 1000.0;
             Console.WriteLine("\nImportação concluída. Tempo total: {0:F2} segundos", elapsedSeconds);
             Console.WriteLine("\nPressione qualquer tecla para voltar ao menu.");
-            Console.ReadKey();
+            Console.ReadLine();
         }
     }
 }
-
-
 
 async Task ProcessBatch(List<PositionModel> batch)
 {
     var serviceProvider = new ServiceCollection()
           .AddDbContext<PositionDbContext>(options =>
-              //options.UseNpgsql("Host=localhost;Database=postgres;Username=postgres;Password=1q2w3e4r@"))
-              options.UseNpgsql("Host=postgres;Database=postgres;Username=postgres;Password=1q2w3e4r@"))
+              options.UseNpgsql(connectionString))
           .BuildServiceProvider();
-
-
 
     using (var context = serviceProvider.GetRequiredService<PositionDbContext>())
     {
@@ -119,6 +109,3 @@ async Task ProcessBatch(List<PositionModel> batch)
         await positionRepository.InsertAsync(batch);
     }
 }
-
-
-
