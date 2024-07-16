@@ -49,24 +49,12 @@ O projeto é composto por duas partes principais:
 - Utilização de técnicas de clean code e DDD
 - Considerar o uso de bibliotecas para resiliência na comunicação com a API externa.
 
-## Avaliação
-
-### Critérios Avaliados
-
-- **Funcionalidade**: A solução atende aos requisitos do cenário?
-- **Qualidade do Código**: O código é limpo, legível e bem estruturado?
-- **Eficiência e Escalabilidade**: A solução lida com o grande volume de dados de forma eficiente e escalável?
-- **Conhecimento Técnico**: Domínio de .NET 8, ASP.NET Core, Entity Framework Core, PostgreSQL, Npgsql, Docker e melhores práticas de desenvolvimento.
-- **Resolução de Problemas**: Capacidade de identificar e resolver problemas de forma eficiente.
-- **Autenticação**: Autenticação correta na API externa.
-- **Dockerização**: Aplicações corretamente dockerizadas e executáveis em containers Docker.
-
 ## Executando o Projeto
 
 ### Pré-requisitos
 
 - Docker instalado.
-- PostgreSQL configurado e em execução.
+- PostgreSQL configurado e em execução (em container ou local).
 
 ### Instruções
 
