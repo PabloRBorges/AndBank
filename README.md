@@ -63,18 +63,10 @@ O projeto é composto por duas partes principais:
     git clone <url-do-repositorio>
     ```
 
-2. **Construir e executar a Aplicação Console**:
+2. **Construir e executar a Aplicação Console a API REST**:
     ```bash
     cd console-app
-    docker build -t console-app .
-    docker run -e CONNECTION_STRING="Host=localhost;Database=finance;Username=user;Password=pass" console-app
-    ```
-
-3. **Construir e executar a API REST**:
-    ```bash
-    cd api-rest
-    docker build -t api-rest .
-    docker run -p 8080:80 -e CONNECTION_STRING="Host=localhost;Database=finance;Username=user;Password=pass" api-rest
+    docker-compose up -d
     ```
 
 ### Estrutura do Banco de Dados
