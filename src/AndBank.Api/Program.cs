@@ -7,13 +7,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder
     .AddApiConfig()
+    .AddCorsConfig()
     .AddSwaggerConfig()
     .AddDbContextConfig();
 
 builder.Services.RegisterServices();
 
-
 var app = builder.Build();
+
+if(app.Environment.IsDevelopment())
+    app.UseCors("Development");
+else
+    app.UseCors("Production");
 
 app.UseSwagger();
 app.UseSwaggerUI();
